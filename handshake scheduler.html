@@ -1,0 +1,133 @@
+<html>
+
+<head>
+<style>
+    body{
+        text-align: center;
+        font-family: monospace;
+    }
+</style>
+</head>
+
+<body>
+    <div style="height: 2em; margin: 2em;">
+        <p>
+            Generate optimal individual meeting schedule.
+        </p>
+        <input style="height: 100%;"
+               placeholder="Enter number of people"
+               id="number"
+               type="text">
+        <button style="height: 100%; border-radius: 1em;"
+                onclick="generate()"
+                id="generate">Generate schedule</button>
+    </div>
+    <div id="output">
+
+    </div>
+
+
+<script>
+
+var schedual_text = ""
+
+function generate(){
+    var number = document.getElementById('number').value
+    // alert(parseInt(number))
+    gen(parseInt(number))
+    document.getElementById('output').innerText = schedual_text;
+}
+
+function rotate(a,b){
+    b.splice(0, 0, a[1]);
+    // b.insert(0,a[1])
+    a.splice(1, 1)
+    // a.remove(a[1])
+    a.push(b[b.length - 1])
+    // a.append(b[-1])
+    b.pop()
+    // b.remove(b[-1])
+}
+
+function print_no_one_if_x(val, x){
+    if (val != x){
+        return val
+    }else{
+        return 'no-one'
+    }
+}
+
+function print_round(a,b,replace_with_noone = null){
+
+    for(var i =0; i < a.length; i++){
+        if (!replace_with_noone){
+            msg = a[i] +
+                  ' meets ' +
+                  b[i];
+        }else{
+            msg = print_no_one_if_x(a[i],replace_with_noone) +
+                  ' meets ' +
+                  print_no_one_if_x(b[i], replace_with_noone);
+        }
+        add_text(msg);
+    }
+}
+
+function is_odd(val){
+    return Boolean(val%2);
+}
+
+function new_list(start, end){
+    var list = [];
+    for (var i = start; i < end; i++) {
+        list.push(i);
+    }
+    return list;
+}
+
+function add_text(txt){
+    schedual_text += '\n' + txt;
+}
+
+function gen(num_of_people){
+    var odd_flag = is_odd(num_of_people);
+    // odd_flag = is_odd(num_people)
+
+    var correct_num_people = !odd_flag ? num_of_people : num_of_people+1;
+    // correct_num_people = num_people if not odd_flag else (num_people+1)
+
+    var first_list_index = parseInt(correct_num_people/2)
+    // first_list_index = int(correct_num_people/2)
+
+    var alist = new_list(1, first_list_index+1)
+    // alist = list(range(first_list_index))
+    var blist = new_list(first_list_index+1, first_list_index*2+1)
+    // blist = list(range(first_list_index, first_list_index*2))
+    schedual_text = ""
+    if (!odd_flag){
+        for(var i = 1; i < correct_num_people; i++){
+            add_text('\n--- Round '+i+' ---')
+            rotate(alist, blist)
+            print_round(alist, blist)
+        }
+    }else{
+        for(var i = 1; i < correct_num_people; i++){
+            add_text('\n--- Round '+i+' ---')
+            rotate(alist, blist)
+            print_round(alist, blist, replace_with_noone = correct_num_people)
+        }
+    }
+    // for a in range(correct_num_people-1):
+    //     rotate_once(alist,blist)
+    //     print ('--- Round {0} ---'.format(a+1))
+    //     if not odd_flag:
+    //         print_round(alist, blist)
+    //     else:
+    //         print_round(alist, blist, replace_with_noone = correct_num_people-1)
+    //     o = list(zip(alist,blist))
+}
+
+</script>
+</body>
+
+</html>
