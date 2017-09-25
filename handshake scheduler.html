@@ -11,16 +11,23 @@
 
 <body>
     <div style="height: 2em; margin: 2em;">
-        <p>
+        <h3>
             Generate optimal individual meeting schedule.
-        </p>
+        </h3>
         <input style="height: 100%;"
                placeholder="Enter number of people"
                id="number"
                type="text">
-        <button style="height: 100%; border-radius: 1em;"
-                onclick="generate()"
-                id="generate">Generate schedule</button>
+               <button style="height: 100%; border-radius: 1em;"
+               onclick="generate()"
+               id="generate">Generate schedule</button>
+
+    </div>
+    <div>
+        <br>
+        Candidate Symbol:
+        <input id="letter_radio" type="radio" name="symbol" value="letter" checked><label>Letter</label>
+        <input id="number_radio" type="radio" name="symbol" value="number"><label>Number</label>
     </div>
     <div id="output">
 
@@ -33,41 +40,59 @@ var schedual_text = ""
 
 function generate(){
     var number = document.getElementById('number').value
-    // alert(parseInt(number))
+    check_radio()
     gen(parseInt(number))
     document.getElementById('output').innerText = schedual_text;
 }
 
+function check_radio(){
+    if (document.getElementById('letter_radio').checked) {
+        render_nums = false
+    }else{
+        render_nums = true
+    }
+}
+
 function rotate(a,b){
     b.splice(0, 0, a[1]);
-    // b.insert(0,a[1])
     a.splice(1, 1)
-    // a.remove(a[1])
     a.push(b[b.length - 1])
-    // a.append(b[-1])
     b.pop()
-    // b.remove(b[-1])
 }
+
+var noone = 'no-one'
+var render_nums = true
 
 function print_no_one_if_x(val, x){
     if (val != x){
         return val
     }else{
-        return 'no-one'
+        return noone
     }
+}
+
+function render_symbol(val){
+    if(val == noone)
+        return noone
+
+    if(render_nums)
+        return val
+    else
+        return (val+9).toString([36]).toUpperCase()
+
 }
 
 function print_round(a,b,replace_with_noone = null){
 
     for(var i =0; i < a.length; i++){
         if (!replace_with_noone){
-            msg = a[i] +
+            msg = render_symbol(a[i]) +
                   ' meets ' +
-                  b[i];
+                  render_symbol(b[i]);
         }else{
-            msg = print_no_one_if_x(a[i],replace_with_noone) +
+            msg = render_symbol(print_no_one_if_x(a[i],replace_with_noone)) +
                   ' meets ' +
-                  print_no_one_if_x(b[i], replace_with_noone);
+                  render_symbol(print_no_one_if_x(b[i], replace_with_noone));
         }
         add_text(msg);
     }
@@ -91,18 +116,13 @@ function add_text(txt){
 
 function gen(num_of_people){
     var odd_flag = is_odd(num_of_people);
-    // odd_flag = is_odd(num_people)
 
     var correct_num_people = !odd_flag ? num_of_people : num_of_people+1;
-    // correct_num_people = num_people if not odd_flag else (num_people+1)
 
     var first_list_index = parseInt(correct_num_people/2)
-    // first_list_index = int(correct_num_people/2)
 
     var alist = new_list(1, first_list_index+1)
-    // alist = list(range(first_list_index))
     var blist = new_list(first_list_index+1, first_list_index*2+1)
-    // blist = list(range(first_list_index, first_list_index*2))
     schedual_text = ""
     if (!odd_flag){
         for(var i = 1; i < correct_num_people; i++){
@@ -117,6 +137,7 @@ function gen(num_of_people){
             print_round(alist, blist, replace_with_noone = correct_num_people)
         }
     }
+
 }
 
 </script>
